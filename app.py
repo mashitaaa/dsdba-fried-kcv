@@ -425,4 +425,4 @@ def build_demo() -> gr.Blocks:
 DEMO = build_demo()
 
 if __name__ == "__main__":
-  DEMO.launch()
+    DEMO.launch(server_name="0.0.0.0", server_port=7860, show_error=True)
