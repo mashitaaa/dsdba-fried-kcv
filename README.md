@@ -92,6 +92,17 @@ The notebook includes:
 
 HF Spaces link (placeholder): `TBD`
 
+### HF Spaces secrets checklist (FR-NLP-005)
+
+Set these **Secrets** in your Hugging Face Space (Settings → Secrets):
+
+- `HF_API_KEY`: API key used by the OpenAI-compatible client to call Hugging Face Inference Chat Completions
+- `HF_TOKEN`: Hugging Face token (used for Hub uploads in training utilities)
+
+Notes:
+- Do **not** hardcode API keys in code or commit them to git.
+- `config.yaml` reads the key name from `nlp.api_key_env_var` (currently `HF_API_KEY`).
+
 ## Demo Preview
 
 Insert a short GIF/preview here once the full pipeline is integrated.

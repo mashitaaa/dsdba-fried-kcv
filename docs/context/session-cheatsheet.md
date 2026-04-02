@@ -9,11 +9,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Active SDLC Phase** | Phase 4 — XAI Grad-CAM (Sprint C) |
-| **Active Sprint** | C |
-| **Last Completed** | Chain 07 — `src/cv/gradcam.py`, `test_gradcam.py`; Q4/Q5 confirmed resolved |
-| **Next Action** | Gate Check: `pytest src/tests/test_gradcam.py -v` |
-| **Gate Status** | 🟢 Q4/Q5 resolved — Grad-CAM module ready for V.E.R.I.F.Y. L3 |
+| **Active SDLC Phase** | Phase 4 — Deployment UI (Sprint E) |
+| **Active Sprint** | E |
+| **Last Completed** | Chain 09 — `app.py` complete, `src/tests/test_e2e.py` added, HF secrets checklist updated |
+| **Next Action** | Gate Check: `pytest src/tests/test_e2e.py -v` |
+| **Gate Status** | 🟡 Pending — run E2E tests in a working Python env |
 
 ---
 
