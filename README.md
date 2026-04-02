@@ -1,3 +1,14 @@
+---
+title: DSDBA Fried KCV
+emoji: 🎤
+colorFrom: blue
+colorTo: purple
+sdk: gradio
+sdk_version: "4.44.0"
+app_file: app.py
+pinned: false
+---
+
 DSDBA - Deepfake Speech Detection & Biometric Authentication System
 ==========================================================
 
