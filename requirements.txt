@@ -5,7 +5,7 @@
 # Serving environment: HuggingFace Spaces (CPU-only, Python 3.10)
 # =============================================================================
 
-torch==2.5.1
+torch==2.6.0
 torchvision==0.21.0
 torchaudio==2.5.1
 librosa==0.10.2
