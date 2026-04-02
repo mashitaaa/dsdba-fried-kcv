@@ -1,3 +1,10 @@
+# =============================================================================
+# requirements.txt — DSDBA Pinned Dependencies
+# DSDBA-SRS-2026-002 v2.1 | NFR-Security: exact versions required
+# Generated from: Google Colab Free Tier (Python 3.10, CUDA 11.8 / T4)
+# Serving environment: HuggingFace Spaces (CPU-only, Python 3.10)
+# =============================================================================
+
 torch==2.5.1
 torchvision==0.20.1
 torchaudio==2.5.1
