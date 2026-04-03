@@ -77,22 +77,30 @@ def _models_dir() -> Path:
 
 
 def _ensure_onnx_session(cfg: dict[str, Any], model: DSDBAModel) -> Any:
-  """
-  Create an ONNX Runtime session once at startup.
+    """Load ONNX session from HuggingFace Hub (FR-DEP-010)."""
+    from huggingface_hub import hf_hub_download
 
-  Args:
-    cfg: Full configuration mapping.
-    model: DSDBA PyTorch model used for ONNX export if needed.
+    # Coba download dari HF Hub dulu
+    try:
+        onnx_path = hf_hub_download(
+            repo_id="narcissablack/fake67",
+            filename="dsdba_efficientnet_b4.onnx"
+        )
+        log_info(stage="deployment", message="onnx_loaded_from_hub",
+                 data={"repo": "narcissablack/fake67"})
+    except Exception:
+        # Fallback ke lokal kalau ada (untuk development)
+        local_path = _models_dir() / "dsdba_efficientnet_b4.onnx"
+        if local_path.exists():
+            onnx_path = str(local_path)
+            log_warning(stage="deployment", message="onnx_loaded_from_local",
+                        data={"path": str(local_path)})
+        else:
+            log_warning(stage="deployment", message="onnx_missing_exporting",
+                        data={"path": str(local_path)})
+            onnx_path = export_to_onnx(model=model, cfg=cfg)
 
-  Returns:
-    onnxruntime.InferenceSession
-  """
-  _models_dir().mkdir(parents=True, exist_ok=True)
-  onnx_path = _models_dir() / "dsdba_efficientnet_b4.onnx"
-  if not onnx_path.exists():
-    log_warning(stage="deployment", message="onnx_missing_exporting", data={"path": str(onnx_path)})
-    onnx_path = export_to_onnx(model=model, cfg=cfg)
-  return load_onnx_session(onnx_path=onnx_path, cfg=cfg)
+    return load_onnx_session(onnx_path=onnx_path, cfg=cfg)
 
 
 def _maybe_load_weights(model: DSDBAModel, cfg: dict[str, Any]) -> None:
@@ -155,18 +163,6 @@ def _band_df(band_pct: dict[str, float]) -> dict[str, list[Any]]:
   bands = [b for b in order if b in band_pct]
   perc = [float(band_pct[b]) for b in bands]
   return {"band": bands, "percent": perc}
-
-def _band_plot(band_pct: dict[str, float]):
-    import matplotlib.pyplot as plt
-    order = ["low", "low_mid", "high_mid", "high"]
-    bands = [b for b in order if b in band_pct]
-    perc = [float(band_pct[b]) for b in bands]
-    fig, ax = plt.subplots(figsize=(5, 3))
-    ax.bar(bands, perc, color="#6366f1")
-    ax.set_ylabel("Attribution (%)")
-    ax.set_title("Frequency Band Attribution")
-    plt.tight_layout()
-    return fig
 
 
 def _confidence_percent(conf: float) -> float:
@@ -332,7 +328,7 @@ async def ui_run(audio_path: str | None) -> Generator[tuple[Any, Any, Any, Any, 
       str(audio_path),
       spec_path,
       heatmap_path,
-      _band_plot(band_pct),
+      _band_df(band_pct),
       "Generating explanation…",
     )
 
@@ -347,7 +343,7 @@ async def ui_run(audio_path: str | None) -> Generator[tuple[Any, Any, Any, Any, 
       str(audio_path),
       spec_path,
       heatmap_path,
-      _band_plot(band_pct),
+      _band_df(band_pct),
       explanation_text,
     )
   except ValueError as exc:
@@ -392,10 +388,15 @@ def build_demo() -> gr.Blocks:
       with gr.Column(scale=1):
         audio_in = gr.Audio(label="Upload audio", type="filepath")
         run_btn = gr.Button("Run")
+        gr.Examples(
+          examples=[[str(p)] for p in demo_samples],
+          inputs=[audio_in],
+          label="Demo examples (synthetic tones/noise)",
+        )
 
       with gr.Column(scale=2):
         with gr.Row():
-          verdict = gr.Textbox(label="Verdict")
+          verdict = gr.Label(label="Verdict")
           confidence_pct = gr.Number(label="Confidence (%)", precision=2)
         conf_bar = gr.HTML(label="Confidence bar")
 
@@ -403,7 +404,7 @@ def build_demo() -> gr.Blocks:
         spec_img = gr.Image(label="Spectrogram (proxy)", type="filepath")
 
         gradcam_img = gr.Image(label="Grad-CAM overlay", type="filepath")
-        band_plot = gr.Plot(label="Band attribution (%)")
+        band_plot = gr.BarPlot(label="Band attribution (%)", x="band", y="percent")
 
         gr.Markdown("**AI-generated explanation (English)**")
         explanation = gr.Textbox(label="Explanation", lines=6)
@@ -430,4 +431,6 @@ def build_demo() -> gr.Blocks:
 
 
 DEMO = build_demo()
-DEMO.launch(server_name="0.0.0.0", server_port=7860, show_error=True)
+
+if __name__ == "__main__":
+  DEMO.launch()
