@@ -156,6 +156,18 @@ def _band_df(band_pct: dict[str, float]) -> dict[str, list[Any]]:
   perc = [float(band_pct[b]) for b in bands]
   return {"band": bands, "percent": perc}
 
+def _band_plot(band_pct: dict[str, float]):
+    import matplotlib.pyplot as plt
+    order = ["low", "low_mid", "high_mid", "high"]
+    bands = [b for b in order if b in band_pct]
+    perc = [float(band_pct[b]) for b in bands]
+    fig, ax = plt.subplots(figsize=(5, 3))
+    ax.bar(bands, perc, color="#6366f1")
+    ax.set_ylabel("Attribution (%)")
+    ax.set_title("Frequency Band Attribution")
+    plt.tight_layout()
+    return fig
+
 
 def _confidence_percent(conf: float) -> float:
   """Convert confidence ratio (0..1) into percentage."""
@@ -396,7 +408,7 @@ def build_demo() -> gr.Blocks:
         spec_img = gr.Image(label="Spectrogram (proxy)", type="filepath")
 
         gradcam_img = gr.Image(label="Grad-CAM overlay", type="filepath")
-        band_plot = gr.BarPlot(label="Band attribution (%)", x="band", y="percent")
+        band_plot = gr.Plot(label="Band attribution (%)")
 
         gr.Markdown("**AI-generated explanation (English)**")
         explanation = gr.Textbox(label="Explanation", lines=6)
@@ -423,6 +435,4 @@ def build_demo() -> gr.Blocks:
 
 
 DEMO = build_demo()
-
-if __name__ == "__main__":
-    DEMO.launch(server_name="0.0.0.0", server_port=7860, show_error=True)
+DEMO.launch(server_name="0.0.0.0", server_port=7860, show_error=True)
