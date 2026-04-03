@@ -332,7 +332,7 @@ async def ui_run(audio_path: str | None) -> Generator[tuple[Any, Any, Any, Any, 
       str(audio_path),
       spec_path,
       heatmap_path,
-      _band_df(band_pct),
+      _band_plot(band_pct),
       "Generating explanation…",
     )
 
@@ -347,7 +347,7 @@ async def ui_run(audio_path: str | None) -> Generator[tuple[Any, Any, Any, Any, 
       str(audio_path),
       spec_path,
       heatmap_path,
-      _band_df(band_pct),
+      _band_plot(band_pct),
       explanation_text,
     )
   except ValueError as exc:
