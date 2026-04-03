@@ -29,6 +29,7 @@ from typing import Any, Generator, Iterable
 
 import gradio as gr
 import numpy as np
+import pandas as pd  # ✅ FIX: tambah import pandas
 import torch
 import yaml
 
@@ -149,20 +150,24 @@ def _validate_file_size(audio_path: Path, cfg: dict[str, Any]) -> None:
     raise ValueError("FILE_TOO_LARGE")
 
 
-def _band_df(band_pct: dict[str, float]) -> dict[str, list[Any]]:
+def _band_df(band_pct: dict[str, float]) -> pd.DataFrame:
   """
-  Convert band_pct dict into a dataframe-like dict for gr.BarPlot without pandas dependency.
+  Convert band_pct dict into a Pandas DataFrame for gr.BarPlot.
+
+  ✅ FIX: gr.BarPlot requires a pandas DataFrame, not a plain dict.
+  Previously returned dict caused:
+    TypeError: Unsupported dataframe type, got: <class 'dict'>
 
   Args:
     band_pct: Mapping of band name -> percent.
 
   Returns:
-    Dict with columns: band, percent.
+    DataFrame with columns: band, percent.
   """
   order = ["low", "low_mid", "high_mid", "high"]
   bands = [b for b in order if b in band_pct]
   perc = [float(band_pct[b]) for b in bands]
-  return {"band": bands, "percent": perc}
+  return pd.DataFrame({"band": bands, "percent": perc})  # ✅ FIX: return DataFrame bukan dict
 
 
 def _confidence_percent(conf: float) -> float:
@@ -303,7 +308,7 @@ async def ui_run(audio_path: str | None) -> Generator[tuple[Any, Any, Any, Any, 
     - waveform display: use the original path (str)
     - spectrogram image path (Path)
     - gradcam overlay image path (Path)
-    - band barplot data (dict)
+    - band barplot data (pd.DataFrame)
     - explanation textbox (str)
   """
   if not audio_path:
