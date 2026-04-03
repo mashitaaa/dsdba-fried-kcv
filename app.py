@@ -395,7 +395,7 @@ def build_demo() -> gr.Blocks:
 
       with gr.Column(scale=2):
         with gr.Row():
-          verdict = gr.Label(label="Verdict")
+          verdict = gr.Textbox(label="Verdict")
           confidence_pct = gr.Number(label="Confidence (%)", precision=2)
         conf_bar = gr.HTML(label="Confidence bar")
 
