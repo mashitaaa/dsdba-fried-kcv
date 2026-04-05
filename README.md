@@ -5,7 +5,6 @@ colorFrom: blue
 colorTo: purple
 sdk: gradio
 sdk_version: "4.44.0"
-python_version: "3.10"
 app_file: app.py
 pinned: false
 ---
@@ -69,14 +68,11 @@ flowchart TB
 
 ## Installation
 
-Gradio is provided by the Hugging Face Space runtime (see `sdk_version` in the YAML header above). For **local** development, install Gradio to match that version, then install the rest:
-
 ```bash
-pip install "gradio[oauth]==4.44.0"
 pip install -r requirements.txt
 ```
 
-All runtime dependencies other than Gradio are pinned in `requirements.txt`.
+All dependencies are pinned in `requirements.txt`.
 
 ## Quickstart
 
